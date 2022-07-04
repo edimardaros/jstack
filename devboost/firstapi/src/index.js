@@ -2,6 +2,8 @@ const http = require('http');
 const { URL } = require('url');
 const routes = require('./routes');
 
+const bodyParser = require('./helpers/bodyParser');
+
 const server = http.createServer((request, response) => {
   // show parameters from request
   // true modify query response to object. From query: `'order=desc'` to `query: [Object: null prototype] { order: 'desc' },`
@@ -42,8 +44,12 @@ const server = http.createServer((request, response) => {
       response.end(JSON.stringify(body));
     }
 
-
-    route.handler(request, response);
+    // if (request.method === 'POST' || request.method === 'PUT') {
+    if (['POST','PUT', 'PATCH'].includes(request.method)) {
+      bodyParser(request, () => route.handler(request, response)); // () => route.handler(request, response) é o callBack da bodyParser
+    } else {
+      route.handler(request, response);
+    }
   } else {
       response.writeHead(404, {'Content-Type': 'text/html'});
       response.end(`Cannot ${request.method}  ${parsedUrl.pathname}`);
