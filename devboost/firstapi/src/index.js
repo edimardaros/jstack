@@ -12,14 +12,32 @@ const server = http.createServer((request, response) => {
   // console.log(Object.fromEntries(parsedUrl.searchParams)); // convert iterable item to javascript object:   `{ order: 'desc' }`
   const parsedUrl = new URL(`http://localhost:3000${request.url}`);
 
+  let { pathname } = parsedUrl;
+  let id = null;
+
+  // const splitEndpoint = pathname.split('/'); // [ '', 'users', '3' ]
+  // console.log(splitEndpoint); // [ '', 'users', '3' ]
+  // const splitEndpoint = pathname.split('/').filter((routeItem) => Boolean(routeItem)); // remove empty values from array
+  // console.log(splitEndpoint); // [ 'users', '3' ]
+  const splitEndpoint = pathname.split('/').filter(Boolean); // remove empty values from array
+  // console.log(splitEndpoint); // [ 'users', '3' ]
+
+  if (splitEndpoint.length > 1) {
+    pathname = `/${splitEndpoint[0]}/:id`;
+    id = splitEndpoint[1];
+  }
+
   console.log(`Resquest method: ${request.method} | Endpoint: ${parsedUrl.pathname}`);
 
   const route = routes.find((routeObj) => (
-    routeObj.endpoint === parsedUrl.pathname && routeObj.method === request.method
+    routeObj.endpoint === pathname && routeObj.method === request.method
   ));
 
   if (route) {
     request.query = Object.fromEntries(parsedUrl.searchParams); // parsedUrl.query;
+    request.params = { id };
+
+
     route.handler(request, response);
   } else {
       response.writeHead(404, {'Content-Type': 'text/html'});
