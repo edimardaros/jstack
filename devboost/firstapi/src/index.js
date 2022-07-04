@@ -1,12 +1,16 @@
 const http = require('http');
-const url = require('url');
+const { URL } = require('url');
 const routes = require('./routes');
 
 const server = http.createServer((request, response) => {
   // show parameters from request
   // true modify query response to object. From query: `'order=desc'` to `query: [Object: null prototype] { order: 'desc' },`
-  const parsedUrl = url.parse(request.url, true);   
+  // const parsedUrl = url.parse(request.url, true);   
   // console.log(parsedUrl);
+  // const parsedUrl = new URL('http://localhost:3000/users?order=desc');
+  // console.log(parsedUrl.searchParams.get('order')); // return this way, as a iterable:  `searchParams: URLSearchParams { 'order' => 'desc' }`
+  // console.log(Object.fromEntries(parsedUrl.searchParams)); // convert iterable item to javascript object:   `{ order: 'desc' }`
+  const parsedUrl = new URL(`http://localhost:3000${request.url}`);
 
   console.log(`Resquest method: ${request.method} | Endpoint: ${parsedUrl.pathname}`);
 
@@ -15,7 +19,7 @@ const server = http.createServer((request, response) => {
   ));
 
   if (route) {
-    request.query = parsedUrl.query;
+    request.query = Object.fromEntries(parsedUrl.searchParams); // parsedUrl.query;
     route.handler(request, response);
   } else {
       response.writeHead(404, {'Content-Type': 'text/html'});
