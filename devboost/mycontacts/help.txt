@@ -1,0 +1,5 @@
+# yarn add eslint -D
+# yarn eslint --init
+
+# VSCode Ext
+EditorConfig
