@@ -27,7 +27,9 @@ class ContactController {
   async store(request, response) {
     // Criar novo registro
     // response.send(request.body);
-    const { name, email, category_id } = request.body;
+    const {
+      name, email, phone, category_id,
+    } = request.body;
     const contactExists = await ContactsRepository.findByEmail(email);
 
     if (!name) {
@@ -39,14 +41,38 @@ class ContactController {
     }
 
     const contact = await ContactsRepository.create({
-      name, email, category_id,
+      name, email, phone, category_id,
     });
 
     response.json(contact);
   }
 
-  update() {
+  async update(request, response) {
     // Editar um Registro
+    const { id } = request.params;
+    const {
+      name, email, phone, category_id,
+    } = request.body;
+
+    const contactExists = await ContactsRepository.findById(id);
+
+    if (!contactExists) {
+      return response.status(400).json({ error: 'Contact does not exists!' });
+    }
+    if (!name) {
+      return response.status(400).json({ error: 'Name is required!' });
+    }
+
+    const contactByEmail = await ContactsRepository.findByEmail(email);
+    if (contactByEmail && contactByEmail.id !== id) {
+      return response.status(400).json({ error: 'This email is alread in use!' });
+    }
+
+    const contact = await ContactsRepository.update(id, {
+      name, email, phone, category_id,
+    });
+
+    response.json(contact);
   }
 
   async delete(request, response) {
