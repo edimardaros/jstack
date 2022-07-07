@@ -4,6 +4,7 @@ const routes = require('./routes');
 
 const app = express();
 
+app.use(express.json()); // Middleware do express usado no post
 app.use(routes); // Middleware 2
 
 app.listen(3000, () => console.log('Server started at http://localhost:3000'));
