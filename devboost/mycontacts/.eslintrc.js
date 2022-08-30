@@ -15,5 +15,6 @@ module.exports = {
     'class-methods-use-this': 0,
     'consistent-return': 0,
     camelcase: 0,
+    'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],
   },
 };
