@@ -4,7 +4,8 @@ class ContactController {
   async index(request, response) {
     // Listar todos os registros
     // response.send('Sent from ContactController');
-    const contacts = await ContactsRepository.findAll();
+    const { orderBy } = request.query;
+    const contacts = await ContactsRepository.findAll(orderBy);
 
     response.json(contacts);
     // response.send(request.appId);
